@@ -13,7 +13,7 @@ def read_image(name: str):
     img = np.asarray(img)
     return img, my_hash
 
-one, two = read_image("jelly1.png")
-
-print(two)
-print(one)
+if __name__ == "__main__":
+    one, two = read_image("jelly1.png")
+    print(two)
+    print(one)
