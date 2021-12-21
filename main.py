@@ -42,6 +42,8 @@ def make_text_command(update: Update, context: CallbackContext) -> None:
 def sticker_to_text_command(update: Update, context: CallbackContext) -> None:
     logging.info("I see a sticker")
     stick = update.message.sticker
+    if stick.is_animated:
+        return
     file = stick.get_file()
     logging.info("received a sticker")
     with tempfile.TemporaryDirectory() as d:
