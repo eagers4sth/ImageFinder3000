@@ -21,7 +21,7 @@ def generate_random_string(length):
     return rand_string
 
 
-def get_text_from_image():
+def get_text_from_image(path: str, img):
     return generate_random_string(randint(0, 300))
 
 if __name__ == "__main__":
