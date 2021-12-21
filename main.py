@@ -70,12 +70,12 @@ def main() -> None:
 
     dispatcher = updater.dispatcher
 
-    dispatcher.add_handler(CommandHandler("start", start))
-    dispatcher.add_handler(CommandHandler("help", help_command))
-    dispatcher.add_handler(CommandHandler("search", search_command))
+    dispatcher.add_handler(CommandHandler("start", start, run_async=True))
+    dispatcher.add_handler(CommandHandler("help", help_command, run_async=True))
+    dispatcher.add_handler(CommandHandler("search", search_command, run_async=True))
 
-    dispatcher.add_handler(MessageHandler(Filters.photo & ~Filters.command, make_text_command))
-    dispatcher.add_handler(MessageHandler(Filters.sticker & ~Filters.command, sticker_to_text_command))
+    dispatcher.add_handler(MessageHandler(Filters.photo & ~Filters.command, make_text_command, run_async=True))
+    dispatcher.add_handler(MessageHandler(Filters.sticker & ~Filters.command, sticker_to_text_command, run_async=True))
     updater.start_polling()
 
     updater.idle()
