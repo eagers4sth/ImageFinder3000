@@ -25,4 +25,4 @@ def get_text_from_image(path: str, img):
     return generate_random_string(randint(0, 300))
 
 if __name__ == "__main__":
-    print(get_text_from_image())
+    print(get_text_from_image(0, 0))
