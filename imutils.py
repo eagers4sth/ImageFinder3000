@@ -1,7 +1,9 @@
 import numpy as np
 from PIL import Image
 import imagehash
-import numpy
+import random
+from random import randint
+import string
 
 def get_hash(img: Image):
     hash_image = imagehash.average_hash(img)
@@ -13,7 +15,14 @@ def read_image(name: str):
     img = np.asarray(img)
     return img, my_hash
 
+def generate_random_string(length):
+    letters = string.ascii_lowercase + ' '
+    rand_string = ''.join(random.choice(letters) for i in range(length))
+    return rand_string
+
+
+def get_text_from_image(path: str, img):
+    return generate_random_string(randint(0, 300))
+
 if __name__ == "__main__":
-    one, two = read_image("jelly1.png")
-    print(two)
-    print(one)
+    print(get_text_from_image(0, 0))
