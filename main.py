@@ -5,18 +5,22 @@ import tempfile
 from telegram import Update, ForceReply
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackContext
 from search import search
-from imutils import make_text
-from caption import caption
+from imutils import read_image
+from imutils import get_text_from_image
 from PIL import Image
 import imagehash
 import numpy
-##3333
+
 logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO
 )
 
 logger = logging.getLogger(__name__)
 
+class ImageInfo:
+    def __init__(self, my_hash, my_text):
+        hash_ = my_hash
+        text = my_text
 
 def start(update: Update, context: CallbackContext) -> None:
     user = update.effective_user
@@ -27,28 +31,21 @@ def start(update: Update, context: CallbackContext) -> None:
 
 
 def help_command(update: Update, context: CallbackContext) -> None:
-    update.message.reply_text('Help!')
-
+    update.message.reply_text('Help!\n/search <text> to find the image\n')
 
 def make_text_command(update: Update, context: CallbackContext) -> None:
-    #update.message.reply_text(update.message.text)
-    for element in update.message.photo:
-        file = element.get_file()
-        with tempfile.TemporaryDirectory() as d:
-            file_path = os.path.join(d, "image.png")
-            file.download(file_path)
-            image, hash_ = read_image(file_path)
-            #adding
+    picture = update.message.photo[-1]
+    file = picture.get_file()
+    #update.message.reply_text("Я бы сохранил, если бы мог")
+    with tempfile.TemporaryDirectory() as d:
+        file_path = os.path.join(d, "image.png")
+        file.download(file_path)
+        #update.message.reply_text("Я сохранил изображение в" + file_path)
+        image, hash_ = read_image(file_path, context.chat_data, update.message.message_id)
+        context.chat_data[update.message.message_id] = ImageInfo(hash_, get_text_from_image(file_path, image))
 
 def search_command(update: Update, context: CallbackContext) -> None:
-    search(context.args, context.chat_data)
-
-#def add_to_db(image, text, chat_data):
-
-
-#def caption_command(update: Update, context: CallbackContext) -> None:
-#    for (img in update.message.photo):
-
+    update.message.reply_to_message(search(context.args, context.chat_data))
 
 def main() -> None:
     """Start the bot."""
@@ -60,8 +57,8 @@ def main() -> None:
     dispatcher.add_handler(CommandHandler("help", help_command))
     dispatcher.add_handler(CommandHandler("search", search_command))
 
-    dispatcher.add_handler(MessageHandler(Filters.text & ~Filters.command, echo))
-
+    #dispatcher.add_handler(MessageHandler(Filters.text & ~Filters.command, echo))
+    dispatcher.add_handler(MessageHandler(Filters.photo & ~Filters.command, make_text_command))
     updater.start_polling()
 
     updater.idle()
