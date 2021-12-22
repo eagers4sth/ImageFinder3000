@@ -10,6 +10,7 @@ from imutils import read_image
 from imutils import get_text_from_image
 from image_info import ImageInfo
 import make_text
+import string
 
 logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO
@@ -65,11 +66,15 @@ def sticker_to_text_command(update: Update, context: CallbackContext) -> None:
             logging.info(len(context.chat_data))
             logging.info('sticker was added')
 
+def trans_str(s):
+    return s.translate(str.maketrans('', '', string.punctuation))
+
 def search_command(update: Update, context: CallbackContext) -> None:
     if not context.chat_data:
         update.message.reply_text('No photo data')
         return
-    MessageToBeReplied = search(' '.join(context.args), context.chat_data)
+    MessageToBeReplied = search(trans_str((' '.join(context.args)).lower()), context.chat_data)
+    print(trans_str((' '.join(context.args)).lower()))
     context.bot.send_message(chat_id=update.message.chat_id, text=context.chat_data[MessageToBeReplied].text, reply_to_message_id=MessageToBeReplied)
 
 '''def search_pm_command(update: Update, context: CallbackContext) -> None:
@@ -85,9 +90,9 @@ def search_command(update: Update, context: CallbackContext) -> None:
 '''
 def main() -> None:
     """Start the bot."""
-    #my_persistence = telegram.ext.PicklePersistence(filename='data2.pickle')
-    #updater = Updater("5074946865:AAFUXJ20UVO618nGVUPqk3xr2yfBvQ6tKE0", persistence=my_persistence, use_context=True)
-    updater = Updater("5074946865:AAFUXJ20UVO618nGVUPqk3xr2yfBvQ6tKE0", use_context=True)
+    my_persistence = telegram.ext.PicklePersistence(filename='FinalData.pickle')
+    updater = Updater("5074946865:AAFUXJ20UVO618nGVUPqk3xr2yfBvQ6tKE0", persistence=my_persistence, use_context=True)
+    #updater = Updater("5074946865:AAFUXJ20UVO618nGVUPqk3xr2yfBvQ6tKE0", use_context=True)
 
     dispatcher = updater.dispatcher
 

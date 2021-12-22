@@ -43,6 +43,7 @@ def get_text(encoder, decoder, word_map, path_to_image: str, beam_size):
         #print(key, value)
 
     res = ' '.join([d2[i] for i in seq])
+    res = res[7:-5:]
     print(res)
     return res
     #return ans
