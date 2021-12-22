@@ -26,7 +26,7 @@ def start(update: Update, context: CallbackContext) -> None:
     )
 
 def help_command(update: Update, context: CallbackContext) -> None:
-    update.message.reply_text('Help!\n/search <description> to find the image\n')
+    update.message.reply_text('Help!\n/search <description> to find an image\n/caption with replied image to see a description')
 
 def make_text_command(update: Update, context: CallbackContext) -> None:
     logging.info("I see a picture")
@@ -75,7 +75,15 @@ def search_command(update: Update, context: CallbackContext) -> None:
         return
     MessageToBeReplied = search(trans_str((' '.join(context.args)).lower()), context.chat_data)
     print(trans_str((' '.join(context.args)).lower()))
-    context.bot.send_message(chat_id=update.message.chat_id, text=context.chat_data[MessageToBeReplied].text, reply_to_message_id=MessageToBeReplied)
+    for to_reply in MessageToBeReplied:
+        context.bot.send_message(chat_id=update.message.chat_id, text=context.chat_data[to_reply].text, reply_to_message_id=to_reply)
+
+def caption_command(update: Update, context: CallbackContext):
+   image_id = update.message.reply_to_message.message_id
+   if context.chat_data.get(image_id, False):
+       update.message.reply_text(context.chat_data[image_id].text)
+   else:
+       update.message.reply_text("there's no image")
 
 '''def search_pm_command(update: Update, context: CallbackContext) -> None:
     logging.info('search_pm_command')
@@ -99,6 +107,7 @@ def main() -> None:
     dispatcher.add_handler(CommandHandler("start", start, run_async=True))
     dispatcher.add_handler(CommandHandler("help", help_command, run_async=True))
     dispatcher.add_handler(CommandHandler("search", search_command, run_async=True))
+    dispatcher.add_handler(CommandHandler("caption", caption_command, run_async=True))
     #dispatcher.add_handler(CommandHandler("search_pm", search_pm_command, run_async=True))
     #dispatcher.add_handler(CommandHandler("description", description_command, run_async=True))
 
