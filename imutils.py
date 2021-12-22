@@ -4,6 +4,7 @@ import imagehash
 import random
 from random import randint
 import string
+from make_text import make_text_from_image
 
 def get_hash(img: Image):
     hash_image = imagehash.average_hash(img)
@@ -12,8 +13,7 @@ def get_hash(img: Image):
 def read_image(name: str):
     img = Image.open(name)
     my_hash = get_hash(img)
-    img = np.asarray(img)
-    return img, my_hash
+    return my_hash
 
 def generate_random_string(length):
     letters = string.ascii_lowercase + ' '
@@ -21,15 +21,10 @@ def generate_random_string(length):
     return rand_string
 
 
-def get_text_from_image(path: str, img):
-    return generate_random_string(randint(0, 300))
+def get_text_from_image(path: str):
+    return make_text_from_image(path)
 
 import argparse
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--arg")
-    parser.add_argument("--name")
-    args = parser.parse_args()
-    print(args.arg, args.name)
-    print(get_text_from_image(0, 0))
+    get_text_from_image("jelly1.png")
