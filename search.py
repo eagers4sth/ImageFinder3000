@@ -1,6 +1,7 @@
 from scipy.sparse import data
-from image_info  import ImageInfo
-from sklearn.neighbors import NearestNeighbors, KNeighborsRegressor
+from image_info import ImageInfo
+from sklearn.neighbors import NearestNeighbors
+#from skmultiflow.lazy import KNNClassifier
 import numpy as np
 from gensim.models import Word2Vec
 import logging
@@ -13,7 +14,7 @@ def search(text: str, database: dict) -> None:
     sentences = [list(text.lower().split())]
     for elem in database.values():
         sentences.append(list(elem.text.split()))
-    model = Word2Vec(sentences, min_count=1, vector_size=2)
+    model = Word2Vec(sentences, min_count=1, vector_size=300)
     text_vectors = [model.wv[word] for word in text.split()]
     text_vector = np.mean(text_vectors, axis=0)
     X = list()
@@ -22,12 +23,11 @@ def search(text: str, database: dict) -> None:
         data_vectors = [model.wv[word] for word in database[elem].text.split()]
         data_vector = list(np.mean(data_vectors, axis=0))
         X.append(data_vector)
-    
-    neigh = KNeighborsRegressor(n_neighbors=2)
-    neigh.fit(X, text_vector)
-    dist, id = neigh.kneighbors([text_vector], n_neighbors=1, return_distance=True)
-    #print(dist, id, type(id), id[0])
-    return keys[id[0][0]]
+    k = min(3, len(database))
+    neigh = NearestNeighbors(n_neighbors=k)
+    neigh.fit(X)
+    dist, ind = neigh.kneighbors([text_vector], n_neighbors=k, return_distance=True)
+    return [keys[ind[0][i]] for i in range(k)]
 
 if __name__ == '__main__':
     database = dict()
