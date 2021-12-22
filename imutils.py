@@ -24,5 +24,12 @@ def generate_random_string(length):
 def get_text_from_image(path: str, img):
     return generate_random_string(randint(0, 300))
 
+import argparse
+
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--arg")
+    parser.add_argument("--name")
+    args = parser.parse_args()
+    print(args.arg, args.name)
     print(get_text_from_image(0, 0))
