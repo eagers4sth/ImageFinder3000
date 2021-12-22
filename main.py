@@ -9,6 +9,7 @@ from search import search
 from imutils import read_image
 from imutils import get_text_from_image
 from image_info import ImageInfo
+import make_text
 
 logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO
@@ -84,8 +85,9 @@ def search_command(update: Update, context: CallbackContext) -> None:
 '''
 def main() -> None:
     """Start the bot."""
-    my_persistence = telegram.ext.PicklePersistence(filename='data.pickle')
-    updater = Updater("5074946865:AAFUXJ20UVO618nGVUPqk3xr2yfBvQ6tKE0", persistence=my_persistence, use_context=True)
+    #my_persistence = telegram.ext.PicklePersistence(filename='data2.pickle')
+    #updater = Updater("5074946865:AAFUXJ20UVO618nGVUPqk3xr2yfBvQ6tKE0", persistence=my_persistence, use_context=True)
+    updater = Updater("5074946865:AAFUXJ20UVO618nGVUPqk3xr2yfBvQ6tKE0", use_context=True)
 
     dispatcher = updater.dispatcher
 

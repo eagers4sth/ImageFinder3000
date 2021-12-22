@@ -1,6 +1,6 @@
 from scipy.sparse import data
-from image_info  import ImageInfo
-from sklearn.neighbors import NearestNeighbors, KNeighborsRegressor
+from image_info import ImageInfo
+from sklearn.neighbors import NearestNeighbors
 import numpy as np
 from gensim.models import Word2Vec
 import logging
@@ -19,15 +19,16 @@ def search(text: str, database: dict) -> None:
     X = list()
     keys = [elem for elem in database]
     for elem in database:
+        print(database[elem].text)
         data_vectors = [model.wv[word] for word in database[elem].text.split()]
         data_vector = list(np.mean(data_vectors, axis=0))
         X.append(data_vector)
     
-    neigh = KNeighborsRegressor(n_neighbors=2)
-    neigh.fit(X, text_vector)
-    dist, id = neigh.kneighbors([text_vector], n_neighbors=1, return_distance=True)
+    neigh = NearestNeighbors(n_neighbors=2)
+    neigh.fit(X)
+    dist, ind = neigh.kneighbors([text_vector], n_neighbors=1, return_distance=True)
     #print(dist, id, type(id), id[0])
-    return keys[id[0][0]]
+    return keys[ind[0][0]]
 
 if __name__ == '__main__':
     database = dict()
