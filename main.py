@@ -79,11 +79,31 @@ def search_command(update: Update, context: CallbackContext) -> None:
         context.bot.send_message(chat_id=update.message.chat_id, text=context.chat_data[to_reply].text, reply_to_message_id=to_reply)
 
 def caption_command(update: Update, context: CallbackContext):
-   image_id = update.message.reply_to_message.message_id
-   if context.chat_data.get(image_id, False):
-       update.message.reply_text(context.chat_data[image_id].text)
-   else:
-       update.message.reply_text("there's no image")
+    logging.info('caption command')
+    if not update.message.reply_to_message:
+        return
+    logging.info("there's a replied message")
+    image_id = update.message.reply_to_message.message_id
+    if context.chat_data.get(image_id, False):
+         update.message.reply_text(context.chat_data[image_id].text)
+    elif update.message.reply_to_message.photo:
+        picture = update.message.reply_to_message.photo[-1]
+        file = picture.get_file()
+        with tempfile.TemporaryDirectory() as d:
+            file_path = os.path.join(d, "image.png")
+            file.download(file_path)
+            logging.info("saved the image")
+            hash_ = read_image(file_path)
+            if context.bot_data.get((update.message.chat_id, hash_), False):
+                logging.info('already have it')
+            else:
+                context.bot_data[(update.message.chat_id, hash_)] = 1
+                context.chat_data[update.message.reply_to_message.message_id] = ImageInfo(hash_, get_text_from_image(file_path))
+                logging.info(len(context.chat_data))
+                logging.info('image was added')
+        update.message.reply_text(context.chat_data[image_id].text)
+    else:
+        update.message.reply_text("there's no image")
 
 '''def search_pm_command(update: Update, context: CallbackContext) -> None:
     logging.info('search_pm_command')
@@ -98,7 +118,7 @@ def caption_command(update: Update, context: CallbackContext):
 '''
 def main() -> None:
     """Start the bot."""
-    my_persistence = telegram.ext.PicklePersistence(filename='FinalData.pickle')
+    my_persistence = telegram.ext.PicklePersistence(filename='FinalData1.pickle')
     updater = Updater("5074946865:AAFUXJ20UVO618nGVUPqk3xr2yfBvQ6tKE0", persistence=my_persistence, use_context=True)
     #updater = Updater("5074946865:AAFUXJ20UVO618nGVUPqk3xr2yfBvQ6tKE0", use_context=True)
 
